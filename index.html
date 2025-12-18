@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Aurora Airlines</title>
+    <title>Aurora Airlines - Поиск билетов</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         /* Импорт шрифтов */
@@ -17,11 +17,7 @@
             --glass-border: rgba(255, 255, 255, 0.2);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
 
         body {
             font-family: 'Montserrat', sans-serif;
@@ -30,31 +26,34 @@
             overflow-x: hidden;
         }
 
-        /* --- Header / Navigation --- */
+        /* --- Header --- */
         header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 20px 50px;
-            position: absolute;
+            position: fixed; /* Фиксированное меню */
             width: 100%;
-            z-index: 10;
+            z-index: 100;
             top: 0;
+            background: linear-gradient(to bottom, rgba(11,12,21,0.9), transparent);
+            transition: background 0.3s;
+        }
+
+        header.scrolled {
+            background: rgba(11, 12, 21, 0.95);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
 
         .logo {
             font-family: 'Cinzel Decorative', cursive;
             color: var(--gold);
             font-size: 1.5rem;
-            line-height: 1.2;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            cursor: pointer;
+            text-decoration: none;
         }
 
-        nav ul {
-            display: flex;
-            list-style: none;
-            gap: 40px;
-        }
+        nav ul { display: flex; list-style: none; gap: 40px; }
 
         nav a {
             text-decoration: none;
@@ -65,9 +64,7 @@
             transition: color 0.3s;
         }
 
-        nav a:hover {
-            color: var(--gold);
-        }
+        nav a:hover { color: var(--gold); }
 
         .book-btn {
             border: 1px solid var(--gold);
@@ -76,18 +73,15 @@
             text-transform: uppercase;
             text-decoration: none;
             transition: all 0.3s;
+            cursor: pointer;
         }
 
-        .book-btn:hover {
-            background: var(--gold);
-            color: var(--dark-bg);
-        }
+        .book-btn:hover { background: var(--gold); color: var(--dark-bg); }
 
-        /* --- Hero Section --- */
+        /* --- Hero --- */
         .hero {
             height: 100vh;
             width: 100%;
-            /* Картинка самолета на фоне */
             background: linear-gradient(rgba(0,0,0,0.3), rgba(11,12,21,1)), 
                         url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80') no-repeat center center/cover;
             display: flex;
@@ -95,31 +89,17 @@
             justify-content: center;
             padding-left: 10%;
             position: relative;
+            background-attachment: fixed; /* Параллакс эффект */
         }
 
-        .hero-text {
-            margin-bottom: 40px;
-            margin-top: -50px;
-        }
+        .hero-text { margin-bottom: 40px; margin-top: -50px; }
+        .hero h1 { font-size: 3.5rem; text-transform: uppercase; font-weight: 600; line-height: 1.2; }
+        .hero p { font-size: 1rem; opacity: 0.8; margin-top: 10px; }
 
-        .hero h1 {
-            font-size: 3.5rem;
-            line-height: 1.2;
-            text-transform: uppercase;
-            font-weight: 600;
-        }
-
-        .hero p {
-            font-size: 1rem;
-            opacity: 0.8;
-            margin-top: 10px;
-        }
-
-        /* --- Search Box (Glassmorphism) --- */
+        /* --- Search Box --- */
         .search-box {
             background: var(--glass-bg);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border: 1px solid var(--glass-border);
             border-radius: 15px;
             padding: 25px;
@@ -127,49 +107,41 @@
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
 
-        .route-inputs {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-
-        .input-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .input-group label {
-            font-size: 0.8rem;
-            color: var(--dark-bg); /* Gold text inside inputs often hard to read, keeping visual style */
-            font-weight: bold;
-        }
+        .route-inputs { display: flex; justify-content: space-between; margin-bottom: 20px; gap: 10px; }
+        
+        .input-wrapper { display: flex; flex-direction: column; width: 48%; }
+        .input-wrapper label { font-size: 0.7rem; color: #aaa; margin-bottom: 5px; }
 
         .custom-input {
             background: transparent;
             border: none;
             border-bottom: 1px solid var(--gold);
             color: var(--gold);
-            font-size: 1.2rem;
-            width: 80px;
+            font-size: 1.1rem;
             font-weight: bold;
             padding: 5px 0;
+            width: 100%;
+            text-transform: uppercase;
         }
         
-        .custom-input::placeholder {
-            color: rgba(212, 175, 55, 0.5);
-        }
+        .custom-input:focus { outline: none; border-bottom: 2px solid #fff; }
 
-        .custom-input:focus {
-            outline: none;
+        .date-inputs { margin-bottom: 25px; }
+        
+        /* Стилизация календаря */
+        input[type="date"] {
+            background: transparent;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px;
+            border-radius: 5px;
+            font-family: 'Montserrat', sans-serif;
+            width: 100%;
+            cursor: pointer;
         }
-
-        .date-inputs {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            color: #ccc;
-            font-size: 0.9rem;
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
         }
 
         .search-btn {
@@ -180,255 +152,224 @@
             font-size: 1rem;
             cursor: pointer;
             text-transform: uppercase;
-            float: right;
+            width: 100%;
             transition: 0.3s;
+            font-weight: bold;
         }
 
-        .search-btn:hover {
-            background: var(--gold);
-            color: black;
-        }
-
-        /* --- Middle Section --- */
-        .explore-banner {
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            padding: 0 50px 40px 0;
-        }
-
-        .explore-content {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .explore-icon {
-            font-size: 2rem;
-            color: var(--gold);
-            border: 1px solid var(--gold);
-            padding: 10px;
-            border-radius: 5px;
-        }
-
-        .explore-text h3 {
-            font-family: 'Cinzel Decorative', cursive;
-            font-size: 1.5rem;
-            text-transform: uppercase;
-        }
+        .search-btn:hover { background: var(--gold); color: black; }
 
         /* --- Destinations --- */
-        .destinations {
-            padding: 20px 50px 50px 50px;
-        }
+        .destinations { padding: 80px 50px; }
+        .section-title { text-transform: uppercase; font-size: 1.5rem; margin-bottom: 30px; letter-spacing: 2px; border-left: 4px solid var(--gold); padding-left: 15px; }
 
-        .section-title {
-            text-transform: uppercase;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-        }
-
-        .cards-container {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 30px;
-        }
+        .cards-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
 
         .card {
             border-radius: 20px;
             overflow: hidden;
-            height: 250px;
+            height: 300px;
             position: relative;
-            border: 2px solid transparent;
-            transition: 0.3s;
+            cursor: pointer;
+            group: card;
         }
 
-        .card:hover {
-            border-color: #ff00ff; /* Purple glow effect as seen in mockup bottom left */
-            box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
-        }
-
-        .card img {
+        .card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s; }
+        .card:hover img { transform: scale(1.1); }
+        
+        .card-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s;
+            background: linear-gradient(to top, black, transparent);
+            padding: 20px;
         }
-
-        .card:hover img {
-            transform: scale(1.1);
-        }
+        
+        .card-title { font-size: 1.5rem; color: var(--gold); font-family: 'Cinzel Decorative'; }
+        .card-price { font-size: 0.9rem; color: #fff; margin-top: 5px; }
 
         /* --- Footer --- */
         footer {
             background-color: #1a1b25;
-            padding: 20px 50px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            padding: 40px 50px;
             border-top: 1px solid #333;
+            margin-top: 50px;
         }
+        .footer-content { display: flex; justify-content: space-between; align-items: center; }
+        .socials i { color: #666; margin-left: 20px; cursor: pointer; font-size: 1.2rem; transition: 0.3s; }
+        .socials i:hover { color: var(--gold); }
 
-        .footer-logo {
-            font-family: 'Cinzel Decorative', cursive;
-            color: var(--gold);
-        }
-
-        .view-all-btn {
-            border: 1px solid var(--gold);
-            background: transparent;
-            color: var(--gold);
-            padding: 10px 30px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            text-transform: uppercase;
-        }
-
-        .socials i {
-            color: #666;
-            margin-left: 15px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-
-        .socials i:hover {
-            color: var(--gold);
-        }
-
-        /* Mobile Responsive */
         @media (max-width: 768px) {
-            header { padding: 20px; }
-            nav ul { display: none; } /* Скрываем меню для простоты на моб */
+            header { padding: 15px; }
+            nav ul { display: none; }
             .hero { padding-left: 20px; }
-            .hero h1 { font-size: 2.5rem; }
+            .hero h1 { font-size: 2.2rem; }
             .search-box { width: 90%; }
             .cards-container { grid-template-columns: 1fr; }
-            footer { flex-direction: column; gap: 20px; text-align: center; }
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">
-            AURORA<br>AIRLINES
-        </div>
+    <header id="navbar">
+        <a href="#" class="logo">AURORA<br>AIRLINES</a>
         <nav>
             <ul>
-                <li><a href="#">Destination</a></li>
-                <li><a href="#">Experience</a></li>
-                <li><a href="#">Contact</a></li>
+                <li><a href="#destinations">Destinations</a></li>
+                <li><a href="#experience">Experience</a></li>
+                <li><a href="#contact">Contact</a></li>
             </ul>
         </nav>
-        <a href="#" class="book-btn">Book</a>
+        <a href="#search-area" class="book-btn">Book Flight</a>
     </header>
 
-    <section class="hero">
+    <section class="hero" id="search-area">
         <div class="hero-text">
             <h1>Journey<br>Behind The<br>Horizon</h1>
-            <p>Elevate your perfect travel.</p>
+            <p>Elevate your perfect travel. Find real tickets now.</p>
         </div>
 
         <div class="search-box">
             <form id="flightForm">
                 <div class="route-inputs">
-                    <div>
-                        <span style="color: #888; font-size: 0.9rem;">From</span>
-                        <input type="text" class="custom-input" value="ALA" placeholder="City">
+                    <div class="input-wrapper">
+                        <label>FROM (IATA Code)</label>
+                        <input type="text" id="origin" class="custom-input" value="ALA" placeholder="AAA" maxlength="3" required>
                     </div>
-                    <div>
-                        <span style="color: #888; font-size: 0.9rem;">To</span>
-                        <input type="text" class="custom-input" value="UAE" placeholder="City">
+                    <div class="input-wrapper">
+                        <label>TO (IATA Code)</label>
+                        <input type="text" id="destination" class="custom-input" value="DXB" placeholder="AAA" maxlength="3" required>
                     </div>
                 </div>
 
                 <div class="date-inputs">
-                    <span>Departure date <i class="fas fa-arrow-right" style="font-size: 0.7rem; color: var(--gold);"></i> Return Date</span>
+                    <div class="input-wrapper" style="width: 100%;">
+                        <label>DEPARTURE DATE</label>
+                        <input type="date" id="departDate" required>
+                    </div>
                 </div>
 
-                <button type="submit" class="search-btn">Search</button>
+                <button type="submit" class="search-btn">SEARCH REAL TICKETS</button>
             </form>
         </div>
     </section>
 
-    <div class="explore-banner">
-        <div class="explore-content">
-            <div class="explore-icon">
-                <i class="fab fa-guilded"></i> </div>
-            <div class="explore-text">
-                <h3>Explore New<br>Frontiers</h3>
-            </div>
-        </div>
-    </div>
-
-    <section class="destinations">
-        <h2 class="section-title">Destinations</h2>
+    <section class="destinations" id="destinations">
+        <h2 class="section-title">Popular Destinations</h2>
         <div class="cards-container">
-            <div class="card">
+            <div class="card" onclick="quickSearch('PAR')">
                 <img src="https://images.unsplash.com/photo-1511739001486-6bfe10ce7859?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Paris">
+                <div class="card-overlay">
+                    <div class="card-title">Paris</div>
+                    <div class="card-price">Flights from $350</div>
+                </div>
             </div>
-            <div class="card">
+            <div class="card" onclick="quickSearch('ROM')">
                 <img src="https://images.unsplash.com/photo-1552832230-c0197dd311b5?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Rome">
+                <div class="card-overlay">
+                    <div class="card-title">Rome</div>
+                    <div class="card-price">Flights from $290</div>
+                </div>
             </div>
-            <div class="card">
-                <img src="https://images.unsplash.com/photo-1518638150340-f706e8403698?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Mexico">
+            <div class="card" onclick="quickSearch('IST')">
+                <img src="https://images.unsplash.com/photo-1527838832700-5059252407fa?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80" alt="Istanbul">
+                <div class="card-overlay">
+                    <div class="card-title">Istanbul</div>
+                    <div class="card-price">Flights from $180</div>
+                </div>
             </div>
         </div>
     </section>
 
-    <footer>
-        <div class="footer-logo">
-            <i class="fab fa-guilded"></i> AURORA AIRLINES &copy; 2025
-        </div>
-        <button class="view-all-btn">View All Routes</button>
-        <div class="socials">
-            <i class="fab fa-facebook-f"></i>
-            <i class="fab fa-twitter"></i>
-            <i class="fab fa-instagram"></i>
+    <footer id="contact">
+        <div class="footer-content">
+            <div class="logo" style="font-size: 1.2rem;">
+                AURORA AIRLINES &copy; 2025
+            </div>
+            <div class="socials">
+                <i class="fab fa-facebook-f"></i>
+                <i class="fab fa-twitter"></i>
+                <i class="fab fa-instagram"></i>
+                <i class="fab fa-telegram"></i>
+            </div>
         </div>
     </footer>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // Обработка кнопки поиска
+            // 1. Установка минимальной даты на "сегодня"
+            const dateInput = document.getElementById('departDate');
+            const today = new Date().toISOString().split('T')[0];
+            dateInput.value = today;
+            dateInput.setAttribute('min', today);
+
+            // 2. Логика формы поиска
             const form = document.getElementById('flightForm');
-            const searchBtn = document.querySelector('.search-btn');
-
+            
             form.addEventListener('submit', (e) => {
-                e.preventDefault(); // Предотвращаем перезагрузку страницы
+                e.preventDefault();
                 
+                // Получаем данные
+                const origin = document.getElementById('origin').value.toUpperCase();
+                const destination = document.getElementById('destination').value.toUpperCase();
+                const rawDate = document.getElementById('departDate').value; // YYYY-MM-DD
+                
+                if(!origin || !destination || !rawDate) {
+                    alert("Please fill all fields");
+                    return;
+                }
+
+                // Преобразуем дату для Aviasales (нужен формат DDMM)
+                // Пример: из 2025-12-25 делаем 2512
+                const dateObj = new Date(rawDate);
+                const day = String(dateObj.getDate()).padStart(2, '0');
+                const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                const dateCode = day + month;
+
+                // Формируем ссылку на реальный поиск Aviasales
+                // Формат: https://www.aviasales.ru/search/ORIGIN + DATE + DESTINATION + 1
+                // Пример: ALA2512DXB1 (1 пассажир)
+                const searchUrl = `https://www.aviasales.ru/search/${origin}${dateCode}${destination}1`;
+
                 // Анимация кнопки
-                searchBtn.innerHTML = 'Searching...';
-                searchBtn.style.opacity = '0.7';
-
-                // Имитация поиска
+                const btn = document.querySelector('.search-btn');
+                const originalText = btn.innerText;
+                btn.innerText = "SEARCHING...";
+                
                 setTimeout(() => {
-                    alert('Поиск рейсов из ALA в UAE запущен! \n(Это демонстрационная версия)');
-                    searchBtn.innerHTML = 'SEARCH';
-                    searchBtn.style.opacity = '1';
-                }, 1000);
+                    // Открываем в новой вкладке
+                    window.open(searchUrl, '_blank');
+                    btn.innerText = originalText;
+                }, 800);
             });
 
-            // Эффект параллакса (легкое движение фона при скролле)
+            // 3. Эффект прокрутки меню
             window.addEventListener('scroll', () => {
-                const scrolled = window.pageYOffset;
-                const hero = document.querySelector('.hero');
-                hero.style.backgroundPositionY = -(scrolled * 0.5) + 'px';
-            });
-
-            // Анимация при наведении на карточки (дополнительно к CSS)
-            const cards = document.querySelectorAll('.card');
-            cards.forEach(card => {
-                card.addEventListener('mouseenter', () => {
-                    card.style.borderColor = '#ff00ff'; // Пурпурный цвет как на макете
-                });
-                card.addEventListener('mouseleave', () => {
-                    card.style.borderColor = 'transparent';
-                });
+                const header = document.getElementById('navbar');
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
             });
         });
+
+        // 4. Функция быстрого поиска из карточек
+        function quickSearch(cityCode) {
+            // Берем текущую дату + 3 дня
+            const date = new Date();
+            date.setDate(date.getDate() + 3);
+            const day = String(date.getDate()).padStart(2, '0');
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            
+            // Предполагаем вылет из Алматы (ALA) по умолчанию, можно поменять
+            const origin = "ALA"; 
+            
+            const searchUrl = `https://www.aviasales.ru/search/${origin}${day}${month}${cityCode}1`;
+            window.open(searchUrl, '_blank');
+        }
     </script>
 </body>
 </html>
